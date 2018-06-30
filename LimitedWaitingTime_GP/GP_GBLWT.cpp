@@ -90,22 +90,16 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 		CurrentBatch.sumofsecprocess = 0;
 		CurrentBatch.timeofbatchprocess = 0;
 		vector<int> record_earse;//记录unscheduledjobs被组批后的位置
-		for (int i = 0; i < unsheduledjobs.size(); i++)//这里循环次数有点多，后期需调整
+		for (int ind = 1; ind <= env.B; ind++) 
 		{
-			if (CurrentBatch.capacity == B)
-			{
-				break;
-			}
-			if (CurrentBatch.capacity + 1 < B&&CurrentBatch.sumofsecprocess + p2[unsheduledjobs[i]] - std::max(p2[unsheduledjobs[i]], CurrentBatch.maxsecprocess) <= W)//如果容量约束和等待约束均满足的话
-			{
-				CurrentBatch.jobid.push_back(unsheduledjobs[i]);//将满足的job加入新批中
-				CurrentBatch.sumofsecprocess += p2[unsheduledjobs[i]];
-				CurrentBatch.maxsecprocess = std::max(p2[unsheduledjobs[i]], CurrentBatch.maxsecprocess);
-				CurrentBatch.timeofbatchprocess = std::max(p1[unsheduledjobs[i]], CurrentBatch.timeofbatchprocess);
-				CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
-				CurrentBatch.capacity++;
-				record_earse.push_back(unsheduledjobs[i]);//记录job位置
-			}
+			int best_ind_job = Findbestpriority(scheme, CurrentBatch, env);//发现最佳的组批job
+			CurrentBatch.jobid.push_back(best_ind_job);//将满足的job加入新批中
+			CurrentBatch.sumofsecprocess += p2[best_ind_job];
+			CurrentBatch.maxsecprocess = std::max(p2[best_ind_job], CurrentBatch.maxsecprocess);
+			CurrentBatch.timeofbatchprocess = std::max(p1[best_ind_job], CurrentBatch.timeofbatchprocess);
+			CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
+			CurrentBatch.capacity++;
+			record_earse.push_back(best_ind_job);//记录job位置
 		}
 		for (int i = 0; i < record_earse.size(); i++)
 		{
@@ -283,7 +277,7 @@ string eval(ExpressionMgr * &tree, Environment &env, string FPT, string SPT, str
 	return a;
 }
 
-int Findbestpriority(ExpressionMgr * scheme, vector<int>& w, vector<int> &load, int* pt)
+int Findbestpriority(ExpressionMgr * scheme, Batch formebatch, ENV env)
 {
 	vector<int> wcopy;
 	vector<int> loadcopy;
@@ -384,4 +378,14 @@ void DeleteTree(ExpressionMgr * &tree)
 	delete tree;
 	tree = NULL;
 	return;
+}
+
+int Buffer::getSPTnum(Buffer& Current, ENV& env)
+{
+	vector<int> p2;
+	for (int i = 0; i < Current.jobid.size(); i++)
+	{
+		p2.push_back(env.p2[Current.jobid[i]]);
+	}
+	return Current.jobid[std::distance(std::begin(p2), std::min_element(std::begin(p2), std::end(p2)))];
 }

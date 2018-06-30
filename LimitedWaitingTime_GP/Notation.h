@@ -71,6 +71,6 @@ class Buffer
 {
 public:
 	vector<int> jobid;
-	//int getSPTnum(Buffer& buffer,ENV& env);
+	int getSPTnum(Buffer& buffer,ENV& env);
 };
 #endif 
