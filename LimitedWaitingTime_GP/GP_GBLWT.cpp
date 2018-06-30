@@ -92,7 +92,7 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 		vector<int> record_earse;//记录unscheduledjobs被组批后的位置
 		for (int ind = 1; ind <= env.B; ind++) 
 		{
-			int best_ind_job = Findbestpriority(scheme, CurrentBatch, env);//发现最佳的组批job
+			int best_ind_job = Findbestpriority(scheme, CurrentBatch,unsheduledjobs, env);//发现最佳的组批job
 			CurrentBatch.jobid.push_back(best_ind_job);//将满足的job加入新批中
 			CurrentBatch.sumofsecprocess += p2[best_ind_job];
 			CurrentBatch.maxsecprocess = std::max(p2[best_ind_job], CurrentBatch.maxsecprocess);
@@ -277,50 +277,74 @@ string eval(ExpressionMgr * &tree, Environment &env, string FPT, string SPT, str
 	return a;
 }
 
-int Findbestpriority(ExpressionMgr * scheme, Batch formebatch, ENV env)
+int Findbestpriority(ExpressionMgr * scheme, Batch formedbatch, vector<int>& unshceduledjobs, ENV env)
 {
-	vector<int> wcopy;
-	vector<int> loadcopy;
-	wcopy = w;
-	loadcopy = load;
+	vector<int> unshcedluedjobscopy;
+	Batch formedbatchcopy;
+	unshcedluedjobscopy = unshceduledjobs;
+	formedbatchcopy = formedbatch;
 	vector<double> priority;
-	for (int i = 0; i < w.size(); i++)
+	for (int i = 0; i < unshceduledjobs.size(); i++)
 	{
-		double SPT = pt[w[i]];
-		loadcopy.push_back(w[i]);
-		std::vector<int>::iterator it = wcopy.begin() + i;//delete the specific data in ith position
-		wcopy.erase(it);
-		double ESUMPT = 0.0;
-		double EMINPT = 9999999999;
-		double EMAXPT = 0;
-		for (int j = 0; j < loadcopy.size(); j++)
+		double FPT=env.p1[unshceduledjobs[i]];//the processing time of First Stage of Job i
+		double SPT=env.p2[unshceduledjobs[i]];//the processing time of second stage of job i
+		formedbatchcopy.jobid.push_back(unshceduledjobs[i]);
+		std::vector<int>::iterator it = unshcedluedjobscopy.begin() + i;//delete the specific data in ith position
+		unshcedluedjobscopy.erase(it);
+		double FSUMPT = 0.0;
+		double FMINPT = 9999999999;
+		double FMAXPT = 0;
+		double SSUMPT = 0.0;
+		double SMINPT = 9999999999;
+		double SMAXPT = 0;
+		for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
 		{
-			ESUMPT += pt[loadcopy[j]];
-			if (pt[loadcopy[j]] > EMAXPT)
+			FSUMPT += env.p1[formedbatchcopy.jobid[j]];
+			if (env.p1[formedbatchcopy.jobid[j]] > FMAXPT)
 			{
-				EMAXPT = pt[loadcopy[j]];
+				FMAXPT = env.p1[formedbatchcopy.jobid[j]];
 			}
-			if (pt[loadcopy[j]]  < EMINPT)
+			if (env.p1[formedbatchcopy.jobid[j]]  < FMINPT)
 			{
-				EMINPT = pt[loadcopy[j]];
+				FMINPT = env.p1[formedbatchcopy.jobid[j]];
+			}
+			SSUMPT += env.p2[formedbatchcopy.jobid[j]];
+			if (env.p2[formedbatchcopy.jobid[j]] > SMAXPT)
+			{
+				SMAXPT = env.p2[formedbatchcopy.jobid[j]];
+			}
+			if (env.p2[formedbatchcopy.jobid[j]]  < SMINPT)
+			{
+				SMINPT = env.p2[formedbatchcopy.jobid[j]];
 			}
 		}
-		double RSUMPT = 0.0;
-		double RMINPT = 9999999999;
-		double RMAXPT = 0;
-		for (int j = 0; j < wcopy.size(); j++)
+		double RFSUMPT=0.0;
+		double RFMAXPT= 0;
+		double RFMINPT= 9999999999;
+		double RSSUMPT=0.0;
+		double RSMAXPT=0;
+		double RSMINPT= 9999999999;
+		for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
 		{
-			RSUMPT += pt[wcopy[j]];
-			if (pt[wcopy[j]] > RMAXPT)
+			RFSUMPT += env.p1[formedbatchcopy.jobid[j]];
+			if (env.p1[formedbatchcopy.jobid[j]] > RFMAXPT)
 			{
-				RMAXPT = pt[wcopy[j]];
+				RFMAXPT = env.p1[formedbatchcopy.jobid[j]];
 			}
-			if (pt[wcopy[j]]  < RMINPT)
+			if (env.p1[formedbatchcopy.jobid[j]]  < RFMINPT)
 			{
-				RMINPT = pt[wcopy[j]];
+				RFMINPT = env.p1[formedbatchcopy.jobid[j]];
+			}
+			RSSUMPT += env.p2[formedbatchcopy.jobid[j]];
+			if (env.p2[formedbatchcopy.jobid[j]] > RSMAXPT)
+			{
+				RSMAXPT = env.p2[formedbatchcopy.jobid[j]];
+			}
+			if (env.p2[formedbatchcopy.jobid[j]]  < RSMINPT)
+			{
+				RSMINPT = env.p2[formedbatchcopy.jobid[j]];
 			}
 		}
-
 		char FPT_S[20];
 		char SPT_S[20];
 		char FSUMPT_S[20];
@@ -355,15 +379,15 @@ int Findbestpriority(ExpressionMgr * scheme, Batch formebatch, ENV env)
 
 		priority.push_back(Interpreter(scheme, FPT_S, SPT_S, FSUMPT_S, FMAXPT_S, FMINPT_S, SSUMPT_S, SMAXPT_S, SMINPT_S, RFSUMPT_S, RFMAXPT_S, RFMINPT_S, RSSUMPT_S, RSMAXPT_S, RSMINPT_S));
 
-		loadcopy.pop_back();
-		std::vector<int>::iterator its = wcopy.begin() + i;//insert the specific data in ith position
-		wcopy.insert(its, w[i]);
+		formedbatchcopy.jobid.pop_back();
+		std::vector<int>::iterator its = unshcedluedjobscopy.begin() + i;//insert the specific data in ith position
+		unshcedluedjobscopy.insert(its, unshceduledjobs[i]);
 	}
 	std::vector<double>::iterator smallest = std::min_element(std::begin(priority), std::end(priority));//search the index of smallest data using STL
 	int index = std::distance(std::begin(priority), smallest);
-	int jobindex = w[index];
-	std::vector<int>::iterator it = w.begin() + index;//delete the specific data in ith position
-	w.erase(it);
+	int jobindex = unshceduledjobs[index];
+	std::vector<int>::iterator it = unshceduledjobs.begin() + index;//delete the specific data in ith position
+	unshceduledjobs.erase(it);
 	return jobindex;
 }
 
