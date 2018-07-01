@@ -90,16 +90,23 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 		CurrentBatch.sumofsecprocess = 0;
 		CurrentBatch.timeofbatchprocess = 0;
 		vector<int> record_earse;//记录unscheduledjobs被组批后的位置
-		for (int ind = 1; ind <= env.B; ind++) 
+		while (CurrentBatch.capacity+1<env.B) 
 		{
 			int best_ind_job = Findbestpriority(scheme, CurrentBatch,unsheduledjobs, env);//发现最佳的组批job
-			CurrentBatch.jobid.push_back(best_ind_job);//将满足的job加入新批中
-			CurrentBatch.sumofsecprocess += p2[best_ind_job];
-			CurrentBatch.maxsecprocess = std::max(p2[best_ind_job], CurrentBatch.maxsecprocess);
-			CurrentBatch.timeofbatchprocess = std::max(p1[best_ind_job], CurrentBatch.timeofbatchprocess);
-			CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
-			CurrentBatch.capacity++;
-			record_earse.push_back(best_ind_job);//记录job位置
+			if (best_ind_job == env.n + 1)
+			{
+				break;
+			}
+			else
+			{
+				CurrentBatch.jobid.push_back(best_ind_job);//将满足的job加入新批中
+				CurrentBatch.sumofsecprocess += p2[best_ind_job];
+				CurrentBatch.maxsecprocess = std::max(p2[best_ind_job], CurrentBatch.maxsecprocess);
+				CurrentBatch.timeofbatchprocess = std::max(p1[best_ind_job], CurrentBatch.timeofbatchprocess);
+				CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
+				CurrentBatch.capacity++;
+				record_earse.push_back(best_ind_job);//记录job位置
+			}	
 		}
 		for (int i = 0; i < record_earse.size(); i++)
 		{
@@ -286,109 +293,120 @@ int Findbestpriority(ExpressionMgr * scheme, Batch formedbatch, vector<int>& uns
 	vector<double> priority;
 	for (int i = 0; i < unshceduledjobs.size(); i++)
 	{
-		double FPT=env.p1[unshceduledjobs[i]];//the processing time of First Stage of Job i
-		double SPT=env.p2[unshceduledjobs[i]];//the processing time of second stage of job i
-		formedbatchcopy.jobid.push_back(unshceduledjobs[i]);
-		std::vector<int>::iterator it = unshcedluedjobscopy.begin() + i;//delete the specific data in ith position
-		unshcedluedjobscopy.erase(it);
-		double FSUMPT = 0.0;
-		double FMINPT = 9999999999;
-		double FMAXPT = 0;
-		double SSUMPT = 0.0;
-		double SMINPT = 9999999999;
-		double SMAXPT = 0;
-		for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
+		if (formedbatchcopy.sumofsecprocess + env.p2[unshceduledjobs[i]] - std::max(env.p2[unshceduledjobs[i]], formedbatchcopy.maxsecprocess) <= env.W)
 		{
-			FSUMPT += env.p1[formedbatchcopy.jobid[j]];
-			if (env.p1[formedbatchcopy.jobid[j]] > FMAXPT)
+			double FPT = env.p1[unshceduledjobs[i]];//the processing time of First Stage of Job i
+			double SPT = env.p2[unshceduledjobs[i]];//the processing time of second stage of job i
+			formedbatchcopy.jobid.push_back(unshceduledjobs[i]);
+
+			std::vector<int>::iterator it = unshcedluedjobscopy.begin() + i;//delete the specific data in ith position
+			unshcedluedjobscopy.erase(it);
+			double FSUMPT = 0.0;
+			double FMINPT = 9999999999;
+			double FMAXPT = 0;
+			double SSUMPT = 0.0;
+			double SMINPT = 9999999999;
+			double SMAXPT = 0;
+			for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
 			{
-				FMAXPT = env.p1[formedbatchcopy.jobid[j]];
+				FSUMPT += env.p1[formedbatchcopy.jobid[j]];
+				if (env.p1[formedbatchcopy.jobid[j]] > FMAXPT)
+				{
+					FMAXPT = env.p1[formedbatchcopy.jobid[j]];
+				}
+				if (env.p1[formedbatchcopy.jobid[j]]  < FMINPT)
+				{
+					FMINPT = env.p1[formedbatchcopy.jobid[j]];
+				}
+				SSUMPT += env.p2[formedbatchcopy.jobid[j]];
+				if (env.p2[formedbatchcopy.jobid[j]] > SMAXPT)
+				{
+					SMAXPT = env.p2[formedbatchcopy.jobid[j]];
+				}
+				if (env.p2[formedbatchcopy.jobid[j]]  < SMINPT)
+				{
+					SMINPT = env.p2[formedbatchcopy.jobid[j]];
+				}
 			}
-			if (env.p1[formedbatchcopy.jobid[j]]  < FMINPT)
+			double RFSUMPT = 0.0;
+			double RFMAXPT = 0;
+			double RFMINPT = 9999999999;
+			double RSSUMPT = 0.0;
+			double RSMAXPT = 0;
+			double RSMINPT = 9999999999;
+			for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
 			{
-				FMINPT = env.p1[formedbatchcopy.jobid[j]];
+				RFSUMPT += env.p1[formedbatchcopy.jobid[j]];
+				if (env.p1[formedbatchcopy.jobid[j]] > RFMAXPT)
+				{
+					RFMAXPT = env.p1[formedbatchcopy.jobid[j]];
+				}
+				if (env.p1[formedbatchcopy.jobid[j]]  < RFMINPT)
+				{
+					RFMINPT = env.p1[formedbatchcopy.jobid[j]];
+				}
+				RSSUMPT += env.p2[formedbatchcopy.jobid[j]];
+				if (env.p2[formedbatchcopy.jobid[j]] > RSMAXPT)
+				{
+					RSMAXPT = env.p2[formedbatchcopy.jobid[j]];
+				}
+				if (env.p2[formedbatchcopy.jobid[j]]  < RSMINPT)
+				{
+					RSMINPT = env.p2[formedbatchcopy.jobid[j]];
+				}
 			}
-			SSUMPT += env.p2[formedbatchcopy.jobid[j]];
-			if (env.p2[formedbatchcopy.jobid[j]] > SMAXPT)
-			{
-				SMAXPT = env.p2[formedbatchcopy.jobid[j]];
-			}
-			if (env.p2[formedbatchcopy.jobid[j]]  < SMINPT)
-			{
-				SMINPT = env.p2[formedbatchcopy.jobid[j]];
-			}
-		}
-		double RFSUMPT=0.0;
-		double RFMAXPT= 0;
-		double RFMINPT= 9999999999;
-		double RSSUMPT=0.0;
-		double RSMAXPT=0;
-		double RSMINPT= 9999999999;
-		for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
-		{
-			RFSUMPT += env.p1[formedbatchcopy.jobid[j]];
-			if (env.p1[formedbatchcopy.jobid[j]] > RFMAXPT)
-			{
-				RFMAXPT = env.p1[formedbatchcopy.jobid[j]];
-			}
-			if (env.p1[formedbatchcopy.jobid[j]]  < RFMINPT)
-			{
-				RFMINPT = env.p1[formedbatchcopy.jobid[j]];
-			}
-			RSSUMPT += env.p2[formedbatchcopy.jobid[j]];
-			if (env.p2[formedbatchcopy.jobid[j]] > RSMAXPT)
-			{
-				RSMAXPT = env.p2[formedbatchcopy.jobid[j]];
-			}
-			if (env.p2[formedbatchcopy.jobid[j]]  < RSMINPT)
-			{
-				RSMINPT = env.p2[formedbatchcopy.jobid[j]];
-			}
-		}
-		char FPT_S[20];
-		char SPT_S[20];
-		char FSUMPT_S[20];
-		char FMAXPT_S[20];
-		char FMINPT_S[20];
-		char SSUMPT_S[20];
-		char SMAXPT_S[20];
-		char SMINPT_S[20];
-		char RFSUMPT_S[20];
-		char RFMAXPT_S[20];
-		char RFMINPT_S[20];
-		char RSSUMPT_S[20];
-		char RSMAXPT_S[20];
-		char RSMINPT_S[20];
+			char FPT_S[20];
+			char SPT_S[20];
+			char FSUMPT_S[20];
+			char FMAXPT_S[20];
+			char FMINPT_S[20];
+			char SSUMPT_S[20];
+			char SMAXPT_S[20];
+			char SMINPT_S[20];
+			char RFSUMPT_S[20];
+			char RFMAXPT_S[20];
+			char RFMINPT_S[20];
+			char RSSUMPT_S[20];
+			char RSMAXPT_S[20];
+			char RSMINPT_S[20];
 
 
-		_itoa(FPT,FPT_S,10);
-		_itoa(SPT, SPT_S, 10);
-		_itoa(FSUMPT, FSUMPT_S, 10);
-		_itoa(FMAXPT, FMAXPT_S, 10);
-		_itoa(FMINPT, FMINPT_S, 10);
-		_itoa(SSUMPT, SSUMPT_S, 10);
-		_itoa(SMAXPT, SMAXPT_S, 10);
-		_itoa(SMINPT, SMINPT_S, 10);
-		_itoa(RFSUMPT, RFSUMPT_S, 10);
-		_itoa(RFMAXPT, RFMAXPT_S, 10);
-		_itoa(RFMINPT, RFMINPT_S, 10);
-		_itoa(RSSUMPT, RSSUMPT_S, 10);
-		_itoa(RSMAXPT, RSMAXPT_S, 10);
-		_itoa(RSMINPT, RSMINPT_S, 10);
-		
+			_itoa(FPT, FPT_S, 10);
+			_itoa(SPT, SPT_S, 10);
+			_itoa(FSUMPT, FSUMPT_S, 10);
+			_itoa(FMAXPT, FMAXPT_S, 10);
+			_itoa(FMINPT, FMINPT_S, 10);
+			_itoa(SSUMPT, SSUMPT_S, 10);
+			_itoa(SMAXPT, SMAXPT_S, 10);
+			_itoa(SMINPT, SMINPT_S, 10);
+			_itoa(RFSUMPT, RFSUMPT_S, 10);
+			_itoa(RFMAXPT, RFMAXPT_S, 10);
+			_itoa(RFMINPT, RFMINPT_S, 10);
+			_itoa(RSSUMPT, RSSUMPT_S, 10);
+			_itoa(RSMAXPT, RSMAXPT_S, 10);
+			_itoa(RSMINPT, RSMINPT_S, 10);
 
-		priority.push_back(Interpreter(scheme, FPT_S, SPT_S, FSUMPT_S, FMAXPT_S, FMINPT_S, SSUMPT_S, SMAXPT_S, SMINPT_S, RFSUMPT_S, RFMAXPT_S, RFMINPT_S, RSSUMPT_S, RSMAXPT_S, RSMINPT_S));
 
-		formedbatchcopy.jobid.pop_back();
-		std::vector<int>::iterator its = unshcedluedjobscopy.begin() + i;//insert the specific data in ith position
-		unshcedluedjobscopy.insert(its, unshceduledjobs[i]);
+			priority.push_back(Interpreter(scheme, FPT_S, SPT_S, FSUMPT_S, FMAXPT_S, FMINPT_S, SSUMPT_S, SMAXPT_S, SMINPT_S, RFSUMPT_S, RFMAXPT_S, RFMINPT_S, RSSUMPT_S, RSMAXPT_S, RSMINPT_S));
+
+			formedbatchcopy.jobid.pop_back();
+			std::vector<int>::iterator its = unshcedluedjobscopy.begin() + i;//insert the specific data in ith position
+			unshcedluedjobscopy.insert(its, unshceduledjobs[i]);
+		}		
 	}
-	std::vector<double>::iterator smallest = std::min_element(std::begin(priority), std::end(priority));//search the index of smallest data using STL
-	int index = std::distance(std::begin(priority), smallest);
-	int jobindex = unshceduledjobs[index];
-	std::vector<int>::iterator it = unshceduledjobs.begin() + index;//delete the specific data in ith position
-	unshceduledjobs.erase(it);
-	return jobindex;
+	if (priority.size()==0)
+	{
+		return env.n + 1;
+	}
+	else
+	{
+		std::vector<double>::iterator smallest = std::min_element(std::begin(priority), std::end(priority));//search the index of smallest data using STL
+		int index = std::distance(std::begin(priority), smallest);
+		int jobindex = unshceduledjobs[index];
+		std::vector<int>::iterator it = unshceduledjobs.begin() + index;//delete the specific data in ith position
+		unshceduledjobs.erase(it);
+		return jobindex;
+	}	
 }
 
 void DeleteTree(ExpressionMgr * &tree)
