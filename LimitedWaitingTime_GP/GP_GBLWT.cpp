@@ -37,30 +37,8 @@ struct CmpByPjtj {
 	}
 };
 
-double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> r, int W, int B)
+double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> r, int W, int B, ExpressionMgr * scheme)
 {
-	//导入派单规则
-	string code1 = "";
-	string code = "";
-	code1 = "(* FPT SPT)";
-
-	ExpressionMgr mgr;
-
-	///一头一尾加上括号，方便处理
-	code = code1;
-	if (code[0] != '(') {
-		if (code.size() > 6) {
-			code = "(" + code + ")";
-		}
-		else {
-			code = "(* " + code + ")";
-		}
-	}
-
-	///将表达式转换为树
-	ExpressionMgr * scheme = mgr.ParseAsIScheme(code);
-
-
 	ENV env;
 	env.B = B;
 	env.n = n;
