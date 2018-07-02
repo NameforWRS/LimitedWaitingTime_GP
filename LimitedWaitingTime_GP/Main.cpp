@@ -1,7 +1,7 @@
 #include"IDG.h"
 #include"Notation.h"
 #include"GBLWT.h"
-
+#include"vld.h"
 void DeleteTree(ExpressionMgr * &tree)
 {
 	if (tree == NULL)
@@ -59,7 +59,7 @@ int main()
 		{
 			for (int w = 0; w < W.size(); w++)
 			{
-				cout << GBLWT_GP(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch]) << endl;
+				cout << GBLWT_GP(n[i], p1[i], p2[i], s1[i], r[i], W[w], B[batch],scheme) << endl;
 				cout << endl;
 			}
 		}

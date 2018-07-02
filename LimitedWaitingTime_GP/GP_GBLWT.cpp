@@ -390,19 +390,6 @@ int Findbestpriority(ExpressionMgr * scheme, Batch formedbatch, vector<int>& uns
 	}	
 }
 
-void DeleteTree(ExpressionMgr * &tree)
-{
-	if (tree == NULL)
-		return;
-	for (int i = 0; i < tree->Children.size(); i++)
-	{
-		DeleteTree(tree->Children[i]);
-	}
-	delete tree;
-	tree = NULL;
-	return;
-}
-
 int Buffer::getSPTnum(Buffer& Current, ENV& env)
 {
 	vector<int> p2;
