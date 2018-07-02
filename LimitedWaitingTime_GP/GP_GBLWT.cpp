@@ -41,6 +41,7 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 {
 	//导入派单规则
 	string code1 = "";
+	string code = "";
 	code1 = "(* FPT SPT)";
 
 	ExpressionMgr mgr;
@@ -61,7 +62,14 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 
 
 	ENV env;
+	env.B = B;
+	env.n = n;
+	env.p1 = p1;
 	env.p2 = p2;
+	env.s1 = s1;
+	env.W = W;
+	env.r = r;
+
 	//Step 1.1 Sort the job
 	multimap<int, int, CmpByIncr> Sequence_Job;//用multimap构建自动对p1进行排序的sequence_Job
 
@@ -105,12 +113,7 @@ double GBLWT_GP(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<in
 				CurrentBatch.timeofbatchprocess = std::max(p1[best_ind_job], CurrentBatch.timeofbatchprocess);
 				CurrentBatch.sumofbatchsec = CurrentBatch.sumofsecprocess + CurrentBatch.timeofbatchprocess;
 				CurrentBatch.capacity++;
-				record_earse.push_back(best_ind_job);//记录job位置
 			}	
-		}
-		for (int i = 0; i < record_earse.size(); i++)
-		{
-			unsheduledjobs.erase(unsheduledjobs.begin() + std::distance(std::begin(unsheduledjobs), find(unsheduledjobs.begin(), unsheduledjobs.end(), record_earse[i])));//去除unscheduledjob已组批的job
 		}
 		FormedBatch.push_back(CurrentBatch);//所有组好的批全部进入FormedBatch中
 	}
@@ -334,25 +337,25 @@ int Findbestpriority(ExpressionMgr * scheme, Batch formedbatch, vector<int>& uns
 			double RSSUMPT = 0.0;
 			double RSMAXPT = 0;
 			double RSMINPT = 9999999999;
-			for (int j = 0; j < formedbatchcopy.jobid.size(); j++)
+			for (int j = 0; j < unshceduledjobs.size(); j++)
 			{
-				RFSUMPT += env.p1[formedbatchcopy.jobid[j]];
-				if (env.p1[formedbatchcopy.jobid[j]] > RFMAXPT)
+				RFSUMPT += env.p1[unshceduledjobs[j]];
+				if (env.p1[unshceduledjobs[j]] > RFMAXPT)
 				{
-					RFMAXPT = env.p1[formedbatchcopy.jobid[j]];
+					RFMAXPT = env.p1[unshceduledjobs[j]];
 				}
-				if (env.p1[formedbatchcopy.jobid[j]]  < RFMINPT)
+				if (env.p1[unshceduledjobs[j]]  < RFMINPT)
 				{
-					RFMINPT = env.p1[formedbatchcopy.jobid[j]];
+					RFMINPT = env.p1[unshceduledjobs[j]];
 				}
-				RSSUMPT += env.p2[formedbatchcopy.jobid[j]];
-				if (env.p2[formedbatchcopy.jobid[j]] > RSMAXPT)
+				RSSUMPT += env.p2[unshceduledjobs[j]];
+				if (env.p2[unshceduledjobs[j]] > RSMAXPT)
 				{
-					RSMAXPT = env.p2[formedbatchcopy.jobid[j]];
+					RSMAXPT = env.p2[unshceduledjobs[j]];
 				}
-				if (env.p2[formedbatchcopy.jobid[j]]  < RSMINPT)
+				if (env.p2[unshceduledjobs[j]]  < RSMINPT)
 				{
-					RSMINPT = env.p2[formedbatchcopy.jobid[j]];
+					RSMINPT = env.p2[unshceduledjobs[j]];
 				}
 			}
 			char FPT_S[20];
