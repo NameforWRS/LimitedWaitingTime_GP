@@ -40,7 +40,7 @@ int main()
 	string code_batchsequence = "";
 	string code_jobsequence = "";
 	code1 = "FPT";
-	code2 = "RT";
+	code2 = "SSUMPTB";
 	code3 = "PTS";
 
 
@@ -52,7 +52,7 @@ int main()
 	///一头一尾加上括号，方便处理
 	code_batchformation = code1;
 	if (code_batchformation[0] != '(') {
-		if (code_batchformation.size() > 8) {
+		if (code_batchformation.size() > 4) {
 			code_batchformation = "(" + code_batchformation + ")";
 		}
 		else {
@@ -61,7 +61,7 @@ int main()
 	}
 	code_batchsequence = code2;
 	if (code_batchsequence[0] != '(') {
-		if (code_batchsequence.size() > 4) {
+		if (code_batchsequence.size() > 8) {
 			code_batchsequence = "(" + code_batchsequence + ")";
 		}
 		else {
@@ -70,7 +70,7 @@ int main()
 	}
 	code_jobsequence = code3;
 	if (code_jobsequence[0] != '(') {
-		if (code_jobsequence.size() > 8) {
+		if (code_jobsequence.size() > 4) {
 			code_jobsequence = "(" + code_jobsequence + ")";
 		}
 		else {
