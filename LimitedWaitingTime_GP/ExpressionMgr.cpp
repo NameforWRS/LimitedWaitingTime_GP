@@ -8,8 +8,12 @@ ExpressionMgr::ExpressionMgr()
 {
 }
 
-ExpressionMgr::ExpressionMgr(double _FPT, double _SPT, double _FSUMPT, double _FMAXPT, double _FMINPT, double _SSUMPT, double _SMAXPT, double _SMINPT, double _RFSUMPT, double _RFMAXPT, double _RFMINPT, double _RSSUMPT, double _RSMAXPT, double _RSMINPT)
+ExpressionMgr::ExpressionMgr(double _RT,double _FPT, double _SPT, double _FSUMPT, double _FMAXPT, double _FMINPT, double _SSUMPT, 
+	double _SMAXPT, double _SMINPT, double _RFSUMPT, double _RFMAXPT, double _RFMINPT, double _RSSUMPT, double _RSMAXPT, 
+	double _RSMINPT, double _PTB,double _FSUMPTB,double _SSUMPTB,double _FMINPTB,double _SMINPTB,double _SMAXPTB,double _PTS,
+	double _RSUMPTS,double _RMINPTS,double _RMAXPTS)
 {
+	RT = _RT;
 	FPT = _FPT;
 	SPT = _SPT;
 	FSUMPT = _FSUMPT;
@@ -24,6 +28,16 @@ ExpressionMgr::ExpressionMgr(double _FPT, double _SPT, double _FSUMPT, double _F
 	RSSUMPT = _RSSUMPT;
 	RSMAXPT = _RSMAXPT;
 	RSMINPT = _RSMINPT;
+	PTB = _PTB;
+	FSUMPTB = _FSUMPTB;
+	SSUMPTB = _SSUMPTB;
+	FMINPTB = _FMINPTB;
+	SMINPTB = _SMINPTB;
+	SMAXPTB = _SMAXPTB;
+	PTS = _PTS;
+	RSUMPTS = _RSUMPTS;
+	RMINPTS = _RMINPTS;
+	RMAXPTS = _RMAXPTS;
 }
 
 

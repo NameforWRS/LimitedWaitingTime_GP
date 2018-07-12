@@ -64,6 +64,10 @@ public:
 	int releasetime;
 	int timeofbatchprocess;
 	int sumofbatchsec;
+	int FSUMPTB;
+	int FMINPTB;
+	int SMINPTB;
+	int Priority;
 	vector<int> jobid;
 };
 //¶¨Òå»º³åÇø
@@ -71,6 +75,7 @@ class Buffer
 {
 public:
 	vector<int> jobid;
-	int getSPTnum(Buffer& buffer,ENV& env);
+	int getSPTnum(Buffer& buffer,ENV& env, ExpressionMgr * scheme);
+	int getSPTnumsimple(Buffer& buffer, ENV& env);
 };
 #endif 
