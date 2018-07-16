@@ -28,7 +28,7 @@
 #include "Procedures.h"
 #include "Object.h"
 #include <sstream> 
-//#include <vld.h>
+#include <vld.h>
 using namespace std;
 #define DBL_MAX 10000000000.0 /* max value */
 

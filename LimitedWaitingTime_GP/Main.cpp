@@ -29,7 +29,7 @@ int main()
 	int R = 10;
 	int F = 10;
 	int G = 50;
-	int seed = 1234567889;
+	int seed = 1531628568137;
 	int timelimit = 10;
 	
 	//导入派单规则
@@ -39,8 +39,8 @@ int main()
 	string code_batchformation = "";
 	string code_batchsequence = "";
 	string code_jobsequence = "";
-	code1 = "FPT";
-	code2 = "SSUMPTB";
+	code1 = "div FSUMPT FPT";
+		code2 = "(* SSUMPTB)";
 	code3 = "PTS";
 
 
@@ -52,7 +52,7 @@ int main()
 	///一头一尾加上括号，方便处理
 	code_batchformation = code1;
 	if (code_batchformation[0] != '(') {
-		if (code_batchformation.size() > 4) {
+		if (code_batchformation.size() > 8) {
 			code_batchformation = "(" + code_batchformation + ")";
 		}
 		else {
@@ -70,7 +70,7 @@ int main()
 	}
 	code_jobsequence = code3;
 	if (code_jobsequence[0] != '(') {
-		if (code_jobsequence.size() > 4) {
+		if (code_jobsequence.size() > 8) {
 			code_jobsequence = "(" + code_jobsequence + ")";
 		}
 		else {
@@ -83,7 +83,7 @@ int main()
 	ExpressionMgr * scheme2 = mgr2.ParseAsIScheme(code_batchsequence);
 	ExpressionMgr * scheme3 = mgr3.ParseAsIScheme(code_jobsequence);
 
-	IDG_simple(n, p1, p2, s1, r, W, B, seed);
+	IDG_1(n, p1, p2, s1, r, W, B, seed);
 
 	vector<double> Obj;
 

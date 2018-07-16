@@ -236,6 +236,6 @@ double GBLWT(int n, vector<int> p1, vector<int> p2, vector<int> s1, vector<int> 
 		}
 	}
 	int OBJ2 = Obj2;
-	//return std::min(OBJ1, OBJ2);
-	return OBJ1;
+	return std::min(OBJ1, OBJ2);
+	//return OBJ1;
 }

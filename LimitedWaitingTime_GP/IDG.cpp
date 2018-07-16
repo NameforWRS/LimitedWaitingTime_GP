@@ -43,8 +43,8 @@ void IDG_simple(vector<int> &n, vector<vector<int>>& p1, vector<vector<int>>& p2
 
 void IDG_1(vector<int> &n, vector<vector<int>>& p1, vector<vector<int>>& p2, vector<vector<int>>& s1, vector<vector<int>>& r, vector<int> &W, vector<int> &B, long seed)
 {
-	n.push_back(10);
-	n.push_back(20);
+	n.push_back(30);
+	n.push_back(40);
 	n.push_back(50);
 
 	W.push_back(40);
